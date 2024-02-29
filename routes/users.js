@@ -19,6 +19,8 @@ const authorize = (req, res, next) => {
   router.post("/register", async (req, res) => {
     // Validate request
     const {
+      first_name,
+      last_name,
       email,
       password
     } = req.body
@@ -28,6 +30,8 @@ const authorize = (req, res, next) => {
 
     //Create the new user
     let newUser = {
+        first_name,
+        last_name,
         email,
         password: hashedPassword
     }

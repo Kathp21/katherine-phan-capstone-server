@@ -12,6 +12,8 @@ exports.up = function(knex) {
         table.string('description').notNullable();
         table.timestamp('created_at').defaultTo(knex.fn.now());
         table.timestamp('updated_at').defaultTo(knex.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+        table.integer('user_id').unsigned().notNullable();
+        table.foreign('user_id').references('id').inTable('users').onDelete('CASCADE');
       })
 };
 
