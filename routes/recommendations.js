@@ -4,7 +4,6 @@ const axios = require("axios")
 
 router.post('/', async (req, res) => {
     try {
-        console.log(req.body)
         const { destination, season, duration, budget, interests, additionalInfo } = req.body
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
             model: "gpt-3.5-turbo-1106",
@@ -43,6 +42,17 @@ router.post('/', async (req, res) => {
             }
         });
         const responseData = response.data.choices[0].message.content
+
+        // Insert data into the database
+        await knex('itinerary').insert({
+            day_string,
+            location,
+            duration,
+            budget,
+            description,
+            // itinerary_data: JSON.stringify(responseData) // Make sure this matches your database schema
+        });
+    
         res.status(200).json(responseData)
         console.log(responseData)
     }  catch (error) {
