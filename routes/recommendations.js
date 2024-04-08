@@ -4,10 +4,11 @@ const axios = require("axios")
 
 router.post('/', async (req, res) => {
     try {
-        console.log(req.body)
         const { destination, season, duration, budget, interests, additionalInfo } = req.body
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-            model: "gpt-3.5-turbo-1106",
+            model: "gpt-3.5-turbo",
+        // const recommendationId = 
+        // const response = await axios.post(`https://api.clickup.com/api/v2`, {
             messages: [{ 
                 role: 'user',
                 content: `I would like a travel itinerary with the following details:
@@ -39,10 +40,24 @@ router.post('/', async (req, res) => {
         }, {
             headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer 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`
+            // 'Authorization': `Bearer sk-jQS3h6r4Xi0bFzVCn1xlT3BlbkFJDxfOz22GqUg4CY4dBwFQs`
+            'Authorization': `Bearer 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`
+            
             }
         });
         const responseData = response.data.choices[0].message.content
+
+        // Insert data into the database
+        await knex('itinerary').insert({
+            day_string,
+            location,
+            duration,
+            budget,
+            description,
+            
+            // itinerary_data: JSON.stringify(responseData) // Make sure this matches your database schema
+        });
+    
         res.status(200).json(responseData)
         console.log(responseData)
     }  catch (error) {
