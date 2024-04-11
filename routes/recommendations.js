@@ -1,12 +1,13 @@
 const express = require("express")
 const router = express.Router()
 const axios = require("axios")
+const knex = require("knex")(require("../knexfile"));
 
 router.post('/', async (req, res) => {
     try {
         const { destination, season, duration, budget, interests, additionalInfo } = req.body
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-            model: "gpt-3.5-turbo-1106",
+            model: "gpt-3.5-turbo",
             messages: [{ 
                 role: 'user',
                 content: `I would like a travel itinerary with the following details:
@@ -31,27 +32,27 @@ router.post('/', async (req, res) => {
                         }
                     ]
                 }
-
                 `
             }], 
             response_format: { "type": "json_object" }
         }, {
             headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer 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`
+            // 'Authorization': `Bearer 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`
+            'Authorization': `Bearer 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`
             }
         });
         const responseData = response.data.choices[0].message.content
 
-        // Insert data into the database
-        await knex('itinerary').insert({
-            day_string,
-            location,
-            duration,
-            budget,
-            description,
-            // itinerary_data: JSON.stringify(responseData) // Make sure this matches your database schema
-        });
+        // // Insert data into the database
+        // await knex('itinerary').insert({
+        //     day_string,
+        //     location,
+        //     duration,
+        //     budget,
+        //     description,
+        //     // itinerary_data: JSON.stringify(responseData) // Make sure this matches your database schema
+        // });
     
         res.status(200).json(responseData)
         console.log(responseData)

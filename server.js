@@ -12,7 +12,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use('/api/chat-completion', dataRoutes)
-app.use('/', userRoutes)
+app.use('/api/chat-completion', userRoutes)
 app.use('/api/chat-completion', itineraryRoutes)
 
 const PORT = process.env.PORT || 8080

@@ -17,6 +17,8 @@ const authorize = (req, res, next) => {
   }
 
   router.post("/register", async (req, res) => {
+    console.log(req.body)
+
     // Validate request
     const {
       first_name,
@@ -35,6 +37,7 @@ const authorize = (req, res, next) => {
         email,
         password: hashedPassword
     }
+
     try {
         await knex('users').insert(newUser)
         res.status(201).send("Registered successfully")
@@ -65,8 +68,16 @@ router.post('/login', async (req, res) => {
     res.status(200).json(token)
 })
 
+// router.get("/current", authorize, async (req, res) => {
+//     res.status(200).json(`Welcome back, ${req.user.email}`);
+// });
+
 router.get("/current", authorize, async (req, res) => {
-    res.status(200).json(`Welcome back, ${req.user.email}`);
+  res.status(200).json(`Welcome back, ${req.user.first_name}`)
+});
+
+router.get("/current/lastname", authorize, async (req, res) => {
+res.status(200).json(`Welcome back, ${req.user.last_name}`)
 });
 
 
