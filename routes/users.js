@@ -16,35 +16,81 @@ const authorize = (req, res, next) => {
     }
   }
 
-  router.post("/register", async (req, res) => {
-    console.log(req.body)
+//   router.post("/register", async (req, res) => {
+//     console.log(req.body)
 
-    // Validate request
-    const {
-      first_name,
-      last_name,
-      email,
-      password
-    } = req.body
+//     // Validate request
+//     const {
+//       first_name,
+//       last_name,
+//       email,
+//       password
+//     } = req.body
 
-    //Encrypt password
-    const hashedPassword = bcrypt.hashSync(password)
+//     //Encrypt password
+//     const hashedPassword = bcrypt.hashSync(password)
 
-    //Create the new user
-    let newUser = {
-        first_name,
-        last_name,
-        email,
-        password: hashedPassword
-    }
+//     //Create the new user
+//     let newUser = {
+//         first_name,
+//         last_name,
+//         email,
+//         password: hashedPassword
+//     }
 
-    try {
-        await knex('users').insert(newUser)
-        res.status(201).send("Registered successfully")
-    }catch(err) {
-        res.status(400).send("Failed registration.")
+//     try {
+//         const newAddedUser = await knex('users').insert(newUser)
+        
+//         //Generate a token
+//         const token = jwt.sign(
+//           { email: newAddedUser.email }, JWT_KEY
+//         )
+
+//         console.log(token)
+
+//         // res.status(201).send("Registered successfully")
+//         res.status(201).json({ message: "Registered successfully", token: token });
+//     }catch(err) {
+//         res.status(400).send("Failed registration.")
+//       }
+// })
+
+router.post("/register", async (req, res) => {
+  const { first_name, last_name, email, password } = req.body;
+
+  if (!first_name || !last_name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required." });
+  }
+
+  try {
+      // Check if user already exists
+      const existingUser = await knex('users').where({ email }).first();
+      if (existingUser) {
+          return res.status(409).json({ message: "User already exists." });
       }
-})
+
+      // Encrypt password asynchronously
+      const hashedPassword = await bcrypt.hashSync(password);
+
+      // Create the new user
+      const newUser = { first_name, last_name, email, password: hashedPassword };
+      const [newUserId] = await knex('users').insert(newUser)
+
+      console.log("New user ID:", newUserId);
+
+       res.status(201).send("Registered successfully")
+
+      // // Generate a token
+      // const token = jwt.sign({ email: email }, JWT_KEY, { expiresIn: '2h' });
+
+      // console.log("LOGGING TOKEN")
+      // console.log(token);
+      // res.status(201).json({ message: "Registered successfully", token: token });
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Failed to register due to an unexpected error." });
+  }
+});
 
 router.post('/login', async (req, res) => {
     //Validate request
@@ -65,7 +111,10 @@ router.post('/login', async (req, res) => {
         { email: user.email }, JWT_KEY
     )
 
-    res.status(200).json(token)
+    console.log(token);
+
+    res.status(201).json({ message: "Login successfully", token: token });
+    // res.status(200).send("Logined")
 })
 
 // router.get("/current", authorize, async (req, res) => {
