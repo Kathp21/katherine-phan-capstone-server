@@ -22,15 +22,11 @@ router.post('/', async (req, res) => {
                 in an array. Each element should be an object with the following schema:
 
                 {
-                    "itinerary": [
-                        {
-                            "day_string": <A string that represents the day of the trip>,
-                            "location": <A more specific area within the destination>,
-                            "duration": <string>,
-                            "budget": <A dollar amount with the dollar sign. The budget required for activities for this specific day>,
-                            "description": <A description of the activities that you'll be doing>
-                        }
-                    ]
+                    "day_string": "<A string that represents the day of the trip>",
+                    "location": "<A more specific area within the destination>",
+                    "duration": "<string>",
+                    "budget": "<A dollar amount with the dollar sign. The budget required for activities for this specific day>",
+                    "description": "<A description of the activities that you'll be doing>"
                 }
                 `
             }], 
@@ -44,16 +40,6 @@ router.post('/', async (req, res) => {
         });
         const responseData = response.data.choices[0].message.content
 
-        // // Insert data into the database
-        // await knex('itinerary').insert({
-        //     day_string,
-        //     location,
-        //     duration,
-        //     budget,
-        //     description,
-        //     // itinerary_data: JSON.stringify(responseData) // Make sure this matches your database schema
-        // });
-    
         res.status(200).json(responseData)
         console.log(responseData)
     }  catch (error) {
