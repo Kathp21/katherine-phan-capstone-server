@@ -70,7 +70,7 @@ router.post('/login', async (req, res) => {
     }
 
     //Generate token
-    const token = jwt.sign({ id: newUserId }, JWT_KEY, { expiresIn: '2h' });
+    const token = jwt.sign({ id: user.id }, JWT_KEY, { expiresIn: '2h' });
 
     res.status(201).json({ message: "Login successfully", token: token });
 })
@@ -127,7 +127,14 @@ router.post('/save-itinerary', authorize, async (req, res) => {
       console.error('Save Itinerary Error:', error);
       res.status(500).json({ message: 'Failed to save itinerary' });
   }
+})
+
+router.get('/verify-token', authorize, (req, res) => {
+  // If the token is verified successfully, the middleware will allow this route to proceed
+  console.log(req.user)
+  res.status(200).json({ message: "Token is valid", user: req.user });
 });
+
 
 
 module.exports = router;
