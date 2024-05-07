@@ -3,6 +3,8 @@ const router = express.Router()
 const axios = require("axios")
 const knex = require("knex")(require("../knexfile"));
 
+const OPEN_AI_KEY = process.env.OPEN_AI_KEY
+
 router.post('/', async (req, res) => {
     try {
         const { destination, season, duration, budget, interests, additionalInfo } = req.body
@@ -34,8 +36,7 @@ router.post('/', async (req, res) => {
         }, {
             headers: {
             'Content-Type': 'application/json',
-            // 'Authorization': `Bearer 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`
-            'Authorization': `Bearer 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`
+            'Authorization': `Bearer ${OPEN_AI_KEY}`
             }
         });
         const responseData = response.data.choices[0].message.content

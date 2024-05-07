@@ -75,6 +75,11 @@ router.post('/login', async (req, res) => {
     res.status(201).json({ message: "Login successfully", token: token });
 })
 
+//Logout 
+router.post('logout', authorize, (req, res) => {
+  res.status(201).json({message: 'Login successful', token})
+})
+
 router.get("/current", authorize, async (req, res) => {
   res.status(200).json(`Welcome back, ${req.user.first_name}`)
 });
@@ -135,6 +140,27 @@ router.get('/verify-token', authorize, (req, res) => {
   res.status(200).json({ message: "Token is valid", user: req.user });
 });
 
+
+router.get('/current-user/:id', async (req, res) => {
+  try {
+    const {id} = req.params
+
+    console.log('User ID:', id); // Debugging
+    const currentUser = await knex('users')
+      .where('users.id', '=', id)
+    if(currentUser.length === 0){
+      return res.status(404).json({
+        message: `User with ID ${id} not found`
+      })
+    }
+    const userData = currentUser[0]
+    res.json(userData)
+  }catch(error) {
+    res.status(500).json({
+        message: `Unable to retrieve user data for user with ID ${id}`, 
+    })
+  }
+})
 
 
 module.exports = router;
