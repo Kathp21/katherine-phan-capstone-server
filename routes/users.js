@@ -5,23 +5,8 @@ const bcrypt = require("bcryptjs");
 require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
 const { JWT_KEY } = process.env;
+const authorize = require('../middleware/authorize') 
 
-const authorize = (req, res, next) => {
-    const { authorization } = req.headers;
-    if (!authorization) {
-      return res.status(401).json({ message: "Authorization header is required" });
-    }
-    const token = authorization.split(" ")[1];
-    try {
-      const payload = jwt.verify(token, JWT_KEY);
-      req.user = payload;
-
-      console.log("Payload:", payload);
-      next();
-    } catch(err) {
-      return res.status(401).json({ message: "Invalid JWT: " + err.message });
-    }
-  }
 
 router.post("/register", async (req, res) => {
   const { first_name, last_name, email, password } = req.body;
@@ -48,6 +33,9 @@ router.post("/register", async (req, res) => {
 
       const token = jwt.sign({ id: newUserId }, JWT_KEY, { expiresIn: '2h' });
 
+      // const token = jwt.sign({ id: newUserId }, JWT_KEY );
+
+
       res.status(201).json({ message: "Registered successfully", token, userId: newUserId });
   } catch (err) {
       console.error(err);
@@ -71,6 +59,8 @@ router.post('/login', async (req, res) => {
 
     //Generate token
     const token = jwt.sign({ id: user.id }, JWT_KEY, { expiresIn: '2h' });
+
+    // const token = jwt.sign({ id: user.id }, JWT_KEY );
 
     res.status(201).json({ message: "Login successfully", token: token });
 })
@@ -141,13 +131,18 @@ router.get('/verify-token', authorize, (req, res) => {
 });
 
 
-router.get('/current-user/:id', async (req, res) => {
+router.get('/current-user', authorize, async (req, res) => {
   try {
-    const {id} = req.params
-
+    // const {id} = req.params
+    const id = req.user.id;
+    if (!id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    
+    
     console.log('User ID:', id); // Debugging
     const currentUser = await knex('users')
-      .where('users.id', '=', id)
+      .where('id', '=', id)
     if(currentUser.length === 0){
       return res.status(404).json({
         message: `User with ID ${id} not found`
@@ -163,4 +158,7 @@ router.get('/current-user/:id', async (req, res) => {
 })
 
 
+
 module.exports = router;
+
+
