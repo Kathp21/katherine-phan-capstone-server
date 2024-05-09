@@ -124,24 +124,45 @@ router.post('/save-itinerary', authorize, async (req, res) => {
   }
 })
 
-router.get('/verify-token', authorize, (req, res) => {
-  // If the token is verified successfully, the middleware will allow this route to proceed
-  console.log(req.user)
-  res.status(200).json({ message: "Token is valid", user: req.user });
-});
+// router.get('/verify-token', authorize, (req, res) => {
+//   // If the token is verified successfully, the middleware will allow this route to proceed
+//   console.log(req.user)
+//   res.status(200).json({ message: "Token is valid", user: req.user });
+// });
 
+
+// router.get('/current-user', authorize, async (req, res) => {
+//   try {
+//     const id = req.user.id;
+//     if (!id) {
+//       return res.status(400).json({ message: "User ID is required" });
+//     }
+//     console.log('User ID:', id); // Debugging
+//     const currentUser = await knex('users')
+//       .where('id', '=', id)
+//     if(currentUser.length === 0){
+//       return res.status(404).json({
+//         message: `User with ID ${id} not found`
+//       })
+//     }
+//     const userData = currentUser[0]
+//     res.json(userData)
+//   }catch(error) {
+//     res.status(500).json({
+//         message: `Unable to retrieve user data for user with ID `, 
+//     })
+//   }
+// })
 
 router.get('/current-user', authorize, async (req, res) => {
   try {
-    // const {id} = req.params
     const id = req.user.id;
     if (!id) {
       return res.status(400).json({ message: "User ID is required" });
     }
-    
-    
     console.log('User ID:', id); // Debugging
     const currentUser = await knex('users')
+      .join('itinerary', 'itinerary.user_id', '=', 'user_id')
       .where('id', '=', id)
     if(currentUser.length === 0){
       return res.status(404).json({
@@ -152,12 +173,10 @@ router.get('/current-user', authorize, async (req, res) => {
     res.json(userData)
   }catch(error) {
     res.status(500).json({
-        message: `Unable to retrieve user data for user with ID ${id}`, 
+        message: `Unable to retrieve user data for user with ID `, 
     })
   }
 })
-
-
 
 module.exports = router;
 
