@@ -131,18 +131,42 @@ router.post('/save-itinerary', authorize, async (req, res) => {
 // });
 
 
+router.get('/current-user', authorize, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    if (!user_id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    console.log('User ID:', user_id); // Debugging
+    const currentUser = await knex('users')
+      .where('id', '=', user_id)
+    if(currentUser.length === 0){
+      return res.status(404).json({
+        message: `User with ID ${user_id} not found`
+      })
+    }
+    const userData = currentUser[0]
+    res.json(userData)
+  }catch(error) {
+    res.status(500).json({
+        message: `Unable to retrieve user data for user with ID `, 
+    })
+  }
+})
+
 // router.get('/current-user', authorize, async (req, res) => {
 //   try {
-//     const id = req.user.id;
-//     if (!id) {
+//     const user_id = req.user.id;
+//     if (!user_id) {
 //       return res.status(400).json({ message: "User ID is required" });
 //     }
-//     console.log('User ID:', id); // Debugging
+//     console.log('User ID:', user_id); // Debugging
 //     const currentUser = await knex('users')
-//       .where('id', '=', id)
+//       .join('itinerary', 'itinerary.user_id', '=', 'user_id')
+//       .where('id', '=', user_id)
 //     if(currentUser.length === 0){
 //       return res.status(404).json({
-//         message: `User with ID ${id} not found`
+//         message: `User with ID ${user_id} not found`
 //       })
 //     }
 //     const userData = currentUser[0]
@@ -154,29 +178,41 @@ router.post('/save-itinerary', authorize, async (req, res) => {
 //   }
 // })
 
-router.get('/current-user', authorize, async (req, res) => {
+// router.get('user-itinerary-list', authorize, async (req, res) => {
+
+// })
+
+router.get('/current-user/itineraries', authorize, async (req, res) => {
   try {
-    const id = req.user.id;
-    if (!id) {
+    const user_id = req.user.id;
+    if (!user_id) {
       return res.status(400).json({ message: "User ID is required" });
     }
-    console.log('User ID:', id); // Debugging
-    const currentUser = await knex('users')
-      .join('itinerary', 'itinerary.user_id', '=', 'user_id')
-      .where('id', '=', id)
-    if(currentUser.length === 0){
+    console.log('User ID:', user_id); // Debugging
+
+    // Query the 'itinerary' table to find entries where 'recommendation_id' matches 'user_id'
+    const itineraries = await knex('itinerary')
+      .where('user_id', '=', user_id)
+      .select('*'); // Select all fields, adjust if specific fields are needed
+
+    // Check if no itineraries were found for the user
+    if (itineraries.length === 0) {
       return res.status(404).json({
-        message: `User with ID ${id} not found`
-      })
+        message: `No itineraries found for user with ID ${user_id}`
+      });
     }
-    const userData = currentUser[0]
-    res.json(userData)
-  }catch(error) {
+
+    // Send the list of itineraries
+    res.json(itineraries);
+  } catch (error) {
+    console.error('Error fetching itineraries:', error); // Debugging
     res.status(500).json({
-        message: `Unable to retrieve user data for user with ID `, 
-    })
+      message: `Unable to retrieve itineraries for user with ID ${user_id}` 
+    });
   }
-})
+});
+
+
 
 module.exports = router;
 
