@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
                 Additional Info: ${additionalInfo}
 
                 Provide the output in JSON with the daily recommendations as elements
-                in an array. Each element should be an object with the following schema:
+                in an array named "itinerary". Each element should be an object with the following schema:
 
                 {
                     "day_string": "<A string that represents the day of the trip>",
