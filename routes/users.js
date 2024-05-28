@@ -75,11 +75,12 @@ router.get("/current", authorize, async (req, res) => {
 });
 
 router.get("/current/lastname", authorize, async (req, res) => {
-res.status(200).json(`Welcome back, ${req.user.last_name}`)
+  res.status(200).json(`Welcome back, ${req.user.last_name}`)
 });
 
 router.post('/save-itinerary', authorize, async (req, res) => {
   const itineraries = req.body.itinerary;
+  const title = req.body.title;
   const userId = req.user.id; // Ensure you have user ID from JWT or session
   console.log(userId)
   console.log(req.body)
@@ -107,6 +108,7 @@ router.post('/save-itinerary', authorize, async (req, res) => {
           for (const item of itineraries) {
               await trx('itinerary').insert({
                 recommendation_id: recommendationId, 
+                title: title,
                 day_string: item.day_string,
                 location: item.location,
                 duration: item.duration,
@@ -154,33 +156,33 @@ router.get('/current-user', authorize, async (req, res) => {
   }
 })
 
-// router.get('/current-user', authorize, async (req, res) => {
-//   try {
-//     const user_id = req.user.id;
-//     if (!user_id) {
-//       return res.status(400).json({ message: "User ID is required" });
-//     }
-//     console.log('User ID:', user_id); // Debugging
-//     const currentUser = await knex('users')
-//       .join('itinerary', 'itinerary.user_id', '=', 'user_id')
-//       .where('id', '=', user_id)
-//     if(currentUser.length === 0){
-//       return res.status(404).json({
-//         message: `User with ID ${user_id} not found`
-//       })
-//     }
-//     const userData = currentUser[0]
-//     res.json(userData)
-//   }catch(error) {
-//     res.status(500).json({
-//         message: `Unable to retrieve user data for user with ID `, 
-//     })
-//   }
-// })
+router.get('/current-user/itinerary-title', authorize, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    if (!user_id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    console.log('User ID:', user_id); // Debugging
 
-// router.get('user-itinerary-list', authorize, async (req, res) => {
+    const title = await knex('itinerary')
+      .where('user_id', '=', user_id)
+      .groupBy('recommendation_id', 'title') // Group by uuid and title to ensure unique titles per batch
+      .select('title', 'recommendation_id');
+    
+    if (title.length === 0) {
+      return res.status(404).json({
+        message: `No title found for user with ID ${user_id}`
+      });
+    }
+    res.json(title)
+  } catch (error) {
+    console.error('Error fetching title:', error); // Debugging
+    res.status(500).json({
+      message: `Unable to retrieve title for user with ID ${user_id}` 
+    });
+  }
+})
 
-// })
 
 router.get('/current-user/itineraries', authorize, async (req, res) => {
   try {
@@ -188,7 +190,7 @@ router.get('/current-user/itineraries', authorize, async (req, res) => {
     if (!user_id) {
       return res.status(400).json({ message: "User ID is required" });
     }
-    console.log('User ID:', user_id); // Debugging
+    // console.log('User ID:', user_id); // Debugging
 
     // Query the 'itinerary' table to find entries where 'recommendation_id' matches 'user_id'
     const itineraries = await knex('itinerary')
