@@ -139,7 +139,7 @@ router.get('/current-user', authorize, async (req, res) => {
     if (!user_id) {
       return res.status(400).json({ message: "User ID is required" });
     }
-    console.log('User ID:', user_id); // Debugging
+    
     const currentUser = await knex('users')
       .where('id', '=', user_id)
     if(currentUser.length === 0){
@@ -162,7 +162,6 @@ router.get('/current-user/itinerary-title', authorize, async (req, res) => {
     if (!user_id) {
       return res.status(400).json({ message: "User ID is required" });
     }
-    console.log('User ID:', user_id); // Debugging
 
     const title = await knex('itinerary')
       .where('user_id', '=', user_id)
@@ -190,7 +189,6 @@ router.get('/current-user/itineraries', authorize, async (req, res) => {
     if (!user_id) {
       return res.status(400).json({ message: "User ID is required" });
     }
-    // console.log('User ID:', user_id); // Debugging
 
     // Query the 'itinerary' table to find entries where 'recommendation_id' matches 'user_id'
     const itineraries = await knex('itinerary')
@@ -210,6 +208,44 @@ router.get('/current-user/itineraries', authorize, async (req, res) => {
     console.error('Error fetching itineraries:', error); // Debugging
     res.status(500).json({
       message: `Unable to retrieve itineraries for user with ID ${user_id}` 
+    });
+  }
+});
+
+
+router.get('/current-user/itinerary-details/:recommendation_id', authorize, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    const recommendation_id = req.params.recommendation_id;
+
+    if (!user_id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    if (!recommendation_id) {
+      return res.status(400).json({ message: "Recommendation ID is required" });
+    }
+
+    console.log('User ID:', user_id); // Debugging
+    console.log('Recommendation ID:', recommendation_id); // Debugging
+
+    const details = await knex('itinerary')
+      .where({
+        user_id: user_id,
+        recommendation_id: recommendation_id
+      })
+      .select('*');
+    
+    if (details.length === 0) {
+      return res.status(404).json({
+        message: `No itinerary details found for user with ID ${user_id} and recommendation ID ${recommendation_id}`
+      });
+    }
+
+    res.json(details);
+  } catch (error) {
+    console.error('Error fetching itinerary details:', error); // Debugging
+    res.status(500).json({
+      message: `Unable to retrieve itinerary details for user with ID ${user_id} and recommendation ID ${recommendation_id}`
     });
   }
 });

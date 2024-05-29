@@ -6,7 +6,7 @@ require('dotenv').config()
 const dataRoutes = require('./routes/recommendations')
 const userRoutes = require('./routes/users')
 const itineraryRoutes = require('./routes/itinerary')
-
+const bodyParser = require('body-parser')
 
 app.use(cors())
 app.use(express.json())
