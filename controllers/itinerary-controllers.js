@@ -5,9 +5,9 @@ const { v4: uuidv4 } = require('uuid');
 const itineraries = async (req, res) => {
 
     try {
-        const user_id = req.user.id;
+        const user_id = req.user.id
         if (!user_id) {
-          return res.status(400).json({ message: "User ID is required" });
+          return res.status(400).json({ message: "User ID is required" })
         }
     
         // Query the 'itinerary' table to find entries where 'recommendation_id' matches 'user_id'
@@ -25,10 +25,10 @@ const itineraries = async (req, res) => {
         // Send the list of itineraries
         res.json(itineraries);
     } catch (error) {
-        console.error('Error fetching itineraries:', error); // Debugging
+        console.error('Error fetching itineraries:', error) // Debugging
         res.status(500).json({
           message: `Unable to retrieve itineraries for user with ID ${user_id}` 
-        });
+        })
     }
 }
 
@@ -37,13 +37,12 @@ const saveItinerary = async (req, res) => {
     const itineraries = req.body.itinerary;
     const title = req.body.title;
     const userId = req.user.id; // Ensure you have user ID from JWT or session
-    console.log(userId)
-    console.log(req.body)
+
     if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
+        return res.status(400).json({ message: "User ID is required" })
     }
     if (!itineraries || itineraries.length === 0) {
-        return res.status(400).json({ message: "No itinerary data provided." });
+        return res.status(400).json({ message: "No itinerary data provided." })
     }
 
     // Check for any missing fields in any itinerary
@@ -53,7 +52,7 @@ const saveItinerary = async (req, res) => {
     );
 
     if (invalidEntry) {
-        return res.status(400).json({ message: "All fields must be provided.", invalidEntry });
+        return res.status(400).json({ message: "All fields must be provided.", invalidEntry })
     }
 
     try {
@@ -70,14 +69,14 @@ const saveItinerary = async (req, res) => {
                 budget: item.budget.replace('$', ''), // Removing dollar sign before saving
                 description: item.description,
                 user_id: userId
-              });
+              })
           }
-        });
-      res.status(201).json({ message: "Itinerary saved successfully" });
+        })
+      res.status(201).json({ message: "Itinerary saved successfully" })
 
     } catch (error) {
       console.error('Save Itinerary Error:', error);
-      res.status(500).json({ message: 'Failed to save itinerary' });
+      res.status(500).json({ message: 'Failed to save itinerary' })
     }
 }
 
@@ -85,24 +84,21 @@ const saveItinerary = async (req, res) => {
 const itinerariesDetails = async (req, res) => {
     try {
         const user_id = req.user.id;
-        const recommendation_id = req.params.recommendation_id;
+        const recommendation_id = req.params.recommendation_id
     
         if (!user_id) {
-          return res.status(400).json({ message: "User ID is required" });
+          return res.status(400).json({ message: "User ID is required" })
         }
         if (!recommendation_id) {
-          return res.status(400).json({ message: "Recommendation ID is required" });
+          return res.status(400).json({ message: "Recommendation ID is required" })
         }
-    
-        console.log('User ID:', user_id); // Debugging
-        console.log('Recommendation ID:', recommendation_id); // Debugging
     
         const details = await knex('itinerary')
           .where({
             user_id: user_id,
             recommendation_id: recommendation_id
           })
-          .select('*');
+          .select('*')
         
         if (details.length === 0) {
           return res.status(404).json({
@@ -110,12 +106,12 @@ const itinerariesDetails = async (req, res) => {
           });
         }
     
-        res.json(details);
+        res.json(details)
     } catch (error) {
-        console.error('Error fetching itinerary details:', error); // Debugging
+        console.error('Error fetching itinerary details:', error) // Debugging
         res.status(500).json({
             message: `Unable to retrieve itinerary details for user with ID ${user_id} and recommendation ID ${recommendation_id}`
-        });
+        })
     }
 }
 

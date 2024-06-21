@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt')
-const crypto = require('crypto')
 const nodemailer = require('nodemailer')
 const knex = require("knex")(require("../knexfile"))
 const jwt = require('jsonwebtoken')
@@ -21,13 +20,6 @@ const forgotPassword = async (req, res) => {
             return res.status(404).json({message: 'User not found'})
         }
 
-        // const token = crypto.randomBytes(32).toString('hex')
-        // const expiration = Date.now() + 3600000 //1 hour
-
-        // await knex('users')
-        //     .where({email})
-        //     .update({reset_token: token, reset_token_expiration: expiration})
-
         //Generate a JWT token
         const token = jwt.sign (
             {email: user.email},
@@ -35,12 +27,8 @@ const forgotPassword = async (req, res) => {
             { expiresIn: '1h'}
         )
 
-        // const resetURL = `${process.env.CLIENT_URL}/reset-password/${token}`
-
         // Ensure the URL has the token as a query parameter
-        const resetURL = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
-        console.log(`Reset URL: ${resetURL}`); // Debugging log
-        
+        const resetURL = `${process.env.CLIENT_URL}/reset-password?token=${token}`   
 
         // Define the HTML content of the email
         const htmlContent = `
@@ -69,7 +57,6 @@ const forgotPassword = async (req, res) => {
             from: process.env.EMAIL,
             subject: 'Password Reset',
             html: htmlContent,
-            // html: `<p>You requested a password reset</p><p>Clicked this <a href="${resetURL}</a> to set a new password</p>`
         })
 
         console.log('Password reset email sent')
@@ -84,15 +71,8 @@ const forgotPassword = async (req, res) => {
 // Post handling password reset requests
 const resetPassword = async (req, res) => {
     const { token, password } = req.body
-    console.log('Received token:', token); // Debugging log
-    console.log('Received password:', password); // Debugging log
 
     try {
-        // const user = await knex('users')
-        //     .where({reset_token})
-        //     .andWhere('reset_toke_expiration', '>', Date.now())
-        //     .first()
-
         //Verify the JWT token
         const decoded = jwt.verify(token, process.env.JWT_KEY)
         
