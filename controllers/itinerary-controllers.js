@@ -115,8 +115,28 @@ const itinerariesDetails = async (req, res) => {
     }
 }
 
+const deleteItinerary = async (req, res) => {
+    const recommendation_id = req.params.recommendation_id
+
+    try {
+        const deleteCount  = await knex('itinerary')
+        .where({recommendation_id: recommendation_id})
+        .del()
+
+        if (deleteCount === 0) {
+            return res.status(404).end()
+        }
+
+        res.status(204).json({ message: "Itinerary has been deleted" })
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+}
+
 module.exports = { 
     itineraries,
     saveItinerary,
-    itinerariesDetails
+    itinerariesDetails,
+    deleteItinerary
 }
