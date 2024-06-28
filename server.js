@@ -11,10 +11,15 @@ const passwordRoutes = require('./routes/password')
 app.use(cors())
 app.use(express.json())
 
-app.use('/api/chat-completion', dataRoutes)
-app.use('/api/chat-completion', userRoutes)
-app.use('/api/chat-completion', itineraryRoutes)
-app.use('/api/chat-completion', passwordRoutes)
+// app.use('/api/chat-completion', dataRoutes)
+// app.use('/api/chat-completion', userRoutes)
+// app.use('/api/chat-completion', itineraryRoutes)
+// app.use('/api/chat-completion', passwordRoutes)
+
+app.use('/api/recommendations', dataRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/itineraries', itineraryRoutes);
+app.use('/api/password', passwordRoutes);
 
 const PORT = process.env.PORT || 8080
 

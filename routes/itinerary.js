@@ -4,7 +4,6 @@ const authorize = require('../middleware/authorize');
 
 
 router.get('/itineraries', authorize, itineraryController.itineraries)
-// router.get('/itinerary-details/:recommendation_id', authorize, itineraryController.itinerariesDetails)
 router.post('/save-itinerary', authorize, itineraryController.saveItinerary)
 
 
