@@ -1,7 +1,8 @@
 const express = require("express")
 const router = express.Router()
 const axios = require("axios")
-const knex = require("knex")(require("../knexfile"));
+// const knex = require("knex")(require("../knexfile"));
+const knex = require('../knexConfig');
 
 const OPEN_AI_KEY = process.env.OPEN_AI_KEY
 
@@ -50,5 +51,15 @@ router.post('/', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 })
+
+router.get('/', async (req, res) => {
+  try {
+    const data = await knex('your_table').select('*');
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 module.exports = router

@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
-const knex = require("knex")(require("../knexfile"))
+const knex = (require("../knexConfig"))
 const jwt = require('jsonwebtoken')
 
 const transporter = nodemailer.createTransport({

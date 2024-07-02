@@ -1,8 +1,8 @@
 const express = require('express')
 const app = express()
-const axios = require('axios')
 const cors = require('cors')
 require('dotenv').config()
+
 const dataRoutes = require('./routes/recommendations')
 const userRoutes = require('./routes/user')
 const itineraryRoutes = require('./routes/itinerary')
@@ -14,7 +14,7 @@ app.use(express.json())
 // app.use('/api/chat-completion', dataRoutes)
 // app.use('/api/chat-completion', userRoutes)
 // app.use('/api/chat-completion', itineraryRoutes)
-// app.use('/api/chat-completion', passwordRoutes)
+// app.use('/api/chat-completion', passwordRoutes)s
 
 app.use('/api/recommendations', dataRoutes);
 app.use('/api/users', userRoutes);
