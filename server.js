@@ -8,13 +8,13 @@ const userRoutes = require('./routes/user')
 const itineraryRoutes = require('./routes/itinerary')
 const passwordRoutes = require('./routes/password')
 
-app.use(cors())
-app.use(express.json())
+const corsOptions = {
+    origin: 'https://main--tripcrafters.netlify.app',
+    optionsSuccessStatus: 200,
+}
 
-// app.use('/api/chat-completion', dataRoutes)
-// app.use('/api/chat-completion', userRoutes)
-// app.use('/api/chat-completion', itineraryRoutes)
-// app.use('/api/chat-completion', passwordRoutes)s
+app.use(cors(corsOptions))
+app.use(express.json())
 
 app.use('/api/recommendations', dataRoutes);
 app.use('/api/users', userRoutes);
