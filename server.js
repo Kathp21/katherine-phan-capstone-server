@@ -8,12 +8,7 @@ const userRoutes = require('./routes/user')
 const itineraryRoutes = require('./routes/itinerary')
 const passwordRoutes = require('./routes/password')
 
-const allowedOrigins = ['http://localhost:3000', 'https://main--tripcrafters.netlify.app'];
-
-// const corsOptions = {
-//     origin: 'https://main--tripcrafters.netlify.app',
-//     optionsSuccessStatus: 200,
-// }
+const allowedOrigins = ['http://localhost:3000', 'https://main--tripcrafters.netlify.app', 'https://tripcrafters.netlify.app'];
 
 const corsOptions = {
     origin: function (origin, callback) {
