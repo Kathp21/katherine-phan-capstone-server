@@ -1,5 +1,6 @@
-const knex = require("knex")(require("../knexfile"));
+// const knex = require("knex")(require("../knexfile"));
 const { v4: uuidv4 } = require('uuid');
+const knex = (require("../knexConfig"))
 
 //Get list of itinerary
 const itineraries = async (req, res) => {

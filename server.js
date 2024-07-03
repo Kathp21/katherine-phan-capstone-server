@@ -1,24 +1,37 @@
 const express = require('express')
 const app = express()
-const axios = require('axios')
 const cors = require('cors')
 require('dotenv').config()
+
 const dataRoutes = require('./routes/recommendations')
 const userRoutes = require('./routes/user')
 const itineraryRoutes = require('./routes/itinerary')
 const passwordRoutes = require('./routes/password')
 
-app.use(cors())
+const allowedOrigins = ['http://localhost:3000', 'https://main--tripcrafters.netlify.app'];
+
+// const corsOptions = {
+//     origin: 'https://main--tripcrafters.netlify.app',
+//     optionsSuccessStatus: 200,
+// }
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if(allowedOrigins.includes(origin) || !origin) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allow by CORS'))
+        }
+    }
+}
+
+app.use(cors(corsOptions))
 app.use(express.json())
 
-app.get('/', (req, res) => {
-    res.send("Hello world")
-})
-
-app.use('/api/chat-completion', dataRoutes)
-app.use('/api/chat-completion', userRoutes)
-app.use('/api/chat-completion', itineraryRoutes)
-app.use('/api/chat-completion', passwordRoutes)
+app.use('/api/recommendations', dataRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/itineraries', itineraryRoutes);
+app.use('/api/password', passwordRoutes);
 
 const PORT = process.env.PORT || 8080
 
