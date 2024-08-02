@@ -135,9 +135,42 @@ const deleteItinerary = async (req, res) => {
     }
 }
 
+const editItineraryTitle = async (req, res) => {
+    const {recommendation_id} = req.params
+    const {title} = req.body
+
+    try{
+
+        if(!title) {
+            return res.status(400).json({message:"Title is required"})
+        }
+        const itinerary = await knex('itinerary')
+            .where({recommendation_id}).first()
+
+        if(!itinerary) {
+            return res.status(404).json({message: 'Itinerary not found'})
+        }
+
+        await knex('itinerary')
+            .where({ recommendation_id})
+            .update({title})
+
+
+        const updatedItinerary = await knex('itinerary')
+            .where({recommendation_id}).first()
+
+        res.status(200).json(updatedItinerary)
+    } catch(error) {
+        console.error('Server error:', error); // Log the error
+
+        res.status(500).json({message: 'Server error', error})
+    }
+}
+
 module.exports = { 
     itineraries,
     saveItinerary,
     itinerariesDetails,
-    deleteItinerary
+    deleteItinerary,
+    editItineraryTitle
 }
