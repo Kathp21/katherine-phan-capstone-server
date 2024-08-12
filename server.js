@@ -30,6 +30,15 @@ app.use('/api/password', passwordRoutes);
 
 const PORT = process.env.PORT || 8080
 
-app.listen(PORT, () => {
-    console.log(`listening on port ${PORT}`)
-})
+// app.listen(PORT, () => {
+//     console.log(`listening on port ${PORT}`)
+// })
+
+module.exports = app; // Export the app for serverless handling
+
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
+
