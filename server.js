@@ -17,7 +17,12 @@ const corsOptions = {
         } else {
             callback(new Error('Not allow by CORS'))
         }
-    }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
 }
 
 app.use(cors(corsOptions))
